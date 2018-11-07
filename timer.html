@@ -1,0 +1,149 @@
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+<style type="text/css">
+input.text{text-align:center;width:300px;}
+</style>
+<style>
+.main{
+    text-align: center; /*让div内部文字居中*/
+    background-color: #fff;
+    border-radius: 20px;
+    width: 500px;
+    height: 400px;
+    margin: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+.main1{
+    text-align: center; /*让div内部文字居中*/
+}
+</style>
+<body>
+<div class="main">   
+<input class="text" id="setTime0" style="width:50px;height:50px;font-size:30px" type="text" value="00"> : 
+<input class="text" id="setTime1" style="width:50px;height:50px;font-size:30px" type="text" value="00"> : 
+<input class="text" id="setTime2" style="width:50px;height:50px;font-size:30px" type="text" value="00"> : 
+<input class="text" id="setTime3" style="width:50px;height:50px;font-size:30px" type="text" value="00"> 
+<div id="dd">
+<span id="clock" style="font-size:100px">00:00:00:00</span>
+<input type="button" style="width:80px;height:40px;font-size:25px" value="开始">
+<input type="button" style="width:80px;height:40px;font-size:25px" value="暂停">
+<input type="button" style="width:80px;height:40px;font-size:25px" value="重置">
+</div>
+</div>
+</body>
+
+</heml>
+
+<script type="text/javascript">
+var oStart=document.getElementsByTagName("input")[4];
+var oStop=document.getElementsByTagName("input")[5];
+var oReset=document.getElementsByTagName("input")[6];
+
+//秒表倒计时控制
+var normalelapse = 100; 
+var nextelapse = normalelapse;
+var counter;  
+var startTime;
+var start;
+var tmpTime = startTime;
+var flag = 0;
+var finish = "00:00:00:00"; 
+var timer = null; 
+// 开始运行 
+oStart.onclick = function run() { 
+    counter = 0;
+    // 初始化开始时间
+    if (flag == 0) {
+        sh = setTime0.value
+        sm = setTime1.value
+        ss = setTime2.value
+        ms = setTime3.value
+        start = sh + ":" + sm + ":" + ss + ":" + ms; 
+    }
+    else {
+        start = tmpTime;
+        flag = 1;
+    }
+    
+    startTime = new Date().valueOf();
+    //alert(startTime);
+    // nextelapse是定时时间, 初始时为100毫秒 
+    // 注意setInterval函数: 时间逝去nextelapse(毫秒)后, onTimer才开始执行 
+    timer = window.setInterval("onTimer()", nextelapse);  
+} 
+// 停止运行 
+oStop.onclick= function stop() {
+    if (flag == 0) {
+        flag = 1;
+    }
+    tmpTime = start;
+    window.clearTimeout(timer); 
+}
+//重置
+oReset.onclick= function () {
+    if (flag == 1) {
+        flag = 0;
+    }
+    window.clearTimeout(timer); 
+    window.clearInterval(timer);
+    setTime0.value = "00"
+    setTime1.value = "00"
+    setTime2.value = "00"
+    setTime3.value = "00"
+    clock.innerText = "00:00:00:00";
+}
+// 倒计时函数 
+function onTimer() 
+{ 
+    if (start == finish) 
+    { 
+        window.clearInterval(timer);
+        alert("time is up!"); 
+        return; 
+    } 
+    var hms = new String(start).split(":"); 
+    var ms = new Number(hms[3]); 
+    var s = new Number(hms[2]); 
+    var m = new Number(hms[1]); 
+    var h = new Number(hms[0]); 
+    ms -= 10; 
+    if (ms < 0) 
+    { 
+        ms = 90; 
+        s -= 1; 
+        if (s < 0) 
+        { 
+            s = 59; 
+            m -= 1; 
+        } 
+        if (m < 0) 
+        { 
+            m = 59; 
+            h -= 1; 
+        } 
+    } 
+    var ms = ms < 10 ? ("0" + ms) : ms; 
+    var ss = s < 10 ? ("0" + s) : s; 
+    var sm = m < 10 ? ("0" + m) : m; 
+    var sh = h < 10 ? ("0" + h) : h; 
+    start = sh + ":" + sm + ":" + ss + ":" + ms; 
+    clock.innerText = start; 
+    // 清除上一次的定时器 
+    window.clearInterval(timer); 
+    // 自校验系统时间得到时间差, 并由此得到下次所启动的新定时器的时间nextelapse 
+    counter++;  
+    var counterSecs = counter * 100; 
+    var elapseSecs = new Date().valueOf() - startTime; 
+    var diffSecs = counterSecs - elapseSecs; 
+    nextelapse = normalelapse + diffSecs; 
+    //diff.value = counterSecs + "-" + elapseSecs + "=" + diffSecs; 
+   // next.value = "nextelapse = " + nextelapse; 
+    if (nextelapse < 0) nextelapse = 0; 
+    // 启动新的定时器 
+    timer = window.setInterval("onTimer()", nextelapse);  
+}
+</script>
